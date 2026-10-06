@@ -161,6 +161,8 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if not await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
         return False
     data = hass.data[DOMAIN]
+    for unsubscribe in data.pop(f"_platform_unsubs_{entry.entry_id}", []):
+        unsubscribe()
     data.pop(f"unsubscribe_{entry.entry_id}")()
     data.pop(f"result_unsubscribe_{entry.entry_id}")()
     data.pop(f"tick_{entry.entry_id}")()
