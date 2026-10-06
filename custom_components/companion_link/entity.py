@@ -1,5 +1,6 @@
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity import Entity
+from homeassistant.helpers import entity_registry as er
 
 from .const import DOMAIN
 
@@ -33,23 +34,35 @@ class CompanionLinkEntity(Entity):
 
 
 def add_alarm_entities(hass, entry, coordinator, async_add_entities, factory) -> None:
-    """Add entities for current alarms and for alarms reported later by the app."""
-    added_ids: set[str] = set()
+    """Add entities for current alarms, later alarms, and remove deleted alarms."""
+    entities_by_id: dict[str, list[CompanionLinkEntity]] = {}
 
-    def add_new_alarms() -> None:
+    def sync_alarms() -> None:
+        current_ids = {str(alarm.get("id")) for alarm in coordinator.alarms}
         entities = []
         for alarm in coordinator.alarms:
             alarm_id = str(alarm.get("id"))
-            if alarm_id in added_ids:
+            if alarm_id in entities_by_id:
                 continue
-            added_ids.add(alarm_id)
-            entities.extend(factory(alarm))
+            alarm_entities = factory(alarm)
+            entities_by_id[alarm_id] = alarm_entities
+            entities.extend(alarm_entities)
         if entities:
             async_add_entities(entities)
 
-    unsubscribe = coordinator.add_listener(add_new_alarms)
+        registry = er.async_get(hass)
+        for alarm_id in entities_by_id.keys() - current_ids:
+            for entity in entities_by_id.pop(alarm_id):
+                if entity.entity_id is None:
+                    continue
+                if registry.async_get(entity.entity_id):
+                    registry.async_remove(entity.entity_id)
+                else:
+                    hass.async_create_task(entity.async_remove(force_remove=True))
+
+    unsubscribe = coordinator.add_listener(sync_alarms)
     hass.data[DOMAIN].setdefault(f"_platform_unsubs_{entry.entry_id}", []).append(unsubscribe)
-    add_new_alarms()
+    sync_alarms()
 
 
 def get_alarm(coordinator, alarm_id):
