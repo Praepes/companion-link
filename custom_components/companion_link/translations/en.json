@@ -1,0 +1,50 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect a device",
+        "data": {"device_id": "Pairing ID"},
+        "description": "Enter the device pairing ID shown in the app."
+      }
+    },
+    "error": {"invalid_device_id": "Enter the pairing ID shown in app settings."}
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Device management",
+        "description": "Manage alarms and RSS for {device_name}.",
+        "menu_options": {
+          "view_alarms": "View alarms",
+          "add_alarm": "Add alarm",
+          "edit_alarm": "Edit alarm",
+          "delete_alarm": "Delete alarm",
+          "view_rss": "View RSS status",
+          "configure_rss": "Configure RSS feeds",
+          "refresh_rss": "Refresh RSS now"
+        }
+      },
+      "view_alarms": {"title": "Current alarms", "description": "{alarms}"},
+      "add_alarm": {
+        "title": "Add alarm",
+        "description": "The alarm will be sent to the app. For a weekly alarm, choose Weekly and select at least one day.",
+        "data": {"hour": "Hour", "minute": "Minute", "label": "Name", "repeat_type": "Repeat", "days": "Repeat days", "enabled": "Enabled", "ring_on_makeup_workdays": "Ring on makeup workdays"},
+        "data_description": {"days": "Ignored for Once and Workdays."}
+      },
+      "edit_alarm": {"title": "Choose an alarm to edit", "data": {"id": "Alarm"}},
+      "edit_alarm_values": {
+        "title": "Edit alarm",
+        "description": "Editing: {alarm}",
+        "data": {"hour": "Hour", "minute": "Minute", "label": "Name", "repeat_type": "Repeat", "days": "Repeat days", "enabled": "Enabled", "ring_on_makeup_workdays": "Ring on makeup workdays"},
+        "data_description": {"days": "Ignored for Once and Workdays."}
+      },
+      "delete_alarm": {"title": "Choose an alarm to delete", "data": {"id": "Alarm"}},
+      "confirm_delete": {"title": "Confirm alarm deletion", "description": "Delete {alarm}? This removes it from the app.", "data": {"confirm": "Confirm deletion"}},
+      "view_rss": {"title": "RSS status", "description": "Feeds:\n{sources}\n\nCached articles: {article_count}\nLast refresh: {refreshed_at}\nRefresh error: {refresh_error}"},
+      "configure_rss": {"title": "Configure RSS feeds", "description": "Enter one HTTP or HTTPS feed URL per line. Saving requests an immediate refresh.", "data": {"sources": "RSS feeds"}},
+      "command_sent": {"title": "Request sent", "description": "{message}\n\nCheck the device's Recent Control Result entity to see whether the app completed it.", "data": {"done": "Done"}}
+    },
+    "abort": {"finished": "Management operation finished.", "device_unavailable": "The device is not connected to Home Assistant. Make sure the app is running and try again.", "no_alarms": "There are no alarms to manage.", "alarm_not_found": "The selected alarm could not be found. Reopen the management menu and try again."},
+    "error": {"select_weekdays": "Choose at least one day for a weekly alarm."}
+  }
+}
