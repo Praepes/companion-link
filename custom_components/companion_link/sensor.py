@@ -3,6 +3,7 @@ from homeassistant.const import PERCENTAGE, UnitOfTime
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.util import dt as dt_util
 
 from . import DeviceData
 from .const import DOMAIN
@@ -44,6 +45,9 @@ class CompanionLinkSensor(CompanionLinkEntity, SensorEntity):
             return len(self.coordinator.alarms)
         if self.key == "rss_sources":
             return len(self.coordinator.rss_sources)
+        if self.key == "next_alarm":
+            value = self.coordinator.values.get(self.key)
+            return dt_util.parse_datetime(value) if isinstance(value, str) else value
         if self.key == "command_result":
             result = self.coordinator.command_result
             if result is None:
