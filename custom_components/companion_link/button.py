@@ -12,6 +12,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     data: DeviceData = hass.data[DOMAIN][entry.entry_id]
     async_add_entities([
         CompanionLinkWakeButton(data),
+        CompanionLinkRefreshRssButton(data),
         CompanionLinkAlarmButton(hass, data, "snooze_alarm", "贪睡闹钟 10 分钟", "mdi:alarm-snooze"),
         CompanionLinkAlarmButton(hass, data, "stop_alarm", "停止闹钟", "mdi:alarm-off"),
     ])
@@ -29,6 +30,14 @@ class CompanionLinkWakeButton(CompanionLinkEntity, ButtonEntity):
 
     async def async_press(self) -> None:
         self.coordinator.send_command("wake")
+
+
+class CompanionLinkRefreshRssButton(CompanionLinkEntity, ButtonEntity):
+    def __init__(self, coordinator) -> None:
+        super().__init__(coordinator, "refresh_rss", "刷新 RSS", "mdi:rss-sync")
+
+    async def async_press(self) -> None:
+        self.coordinator.send_command("refresh_rss")
 
 
 class CompanionLinkAlarmButton(CompanionLinkEntity, ButtonEntity):

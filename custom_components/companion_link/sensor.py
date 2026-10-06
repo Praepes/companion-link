@@ -23,6 +23,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         CompanionLinkSensor(data, "uptime_seconds", "运行时间", "mdi:timer-outline", None, UnitOfTime.SECONDS),
         CompanionLinkSensor(data, "next_alarm", "下次闹钟", "mdi:alarm", SensorDeviceClass.TIMESTAMP, None),
         CompanionLinkSensor(data, "next_alarm_label", "下次闹钟名称", "mdi:label-outline", None, None),
+        CompanionLinkSensor(data, "alarms", "闹钟列表", "mdi:alarm-multiple", None, None),
+        CompanionLinkSensor(data, "rss_sources", "RSS 来源", "mdi:rss", None, None),
         CompanionLinkSensor(data, "capabilities", "可用控制能力", "mdi:check-decagram", None, None),
         CompanionLinkSensor(data, "command_result", "最近控制结果", "mdi:check-circle-outline", None, None),
     ])
@@ -38,6 +40,10 @@ class CompanionLinkSensor(CompanionLinkEntity, SensorEntity):
 
     @property
     def native_value(self):
+        if self.key == "alarms":
+            return len(self.coordinator.alarms)
+        if self.key == "rss_sources":
+            return len(self.coordinator.rss_sources)
         if self.key == "command_result":
             result = self.coordinator.command_result
             if result is None:
@@ -51,8 +57,16 @@ class CompanionLinkSensor(CompanionLinkEntity, SensorEntity):
         return value
 
     @property
+    def extra_state_attributes(self):
+        if self.key == "alarms":
+            return {"alarms": self.coordinator.alarms}
+        if self.key == "rss_sources":
+            return {"sources": self.coordinator.rss_sources}
+        return None
+
+    @property
     def available(self) -> bool:
         if self.key == "command_result":
             return self.coordinator.command_result is not None
-        return self.coordinator.available and self.key in self.coordinator.values
+        return self.coordinator.available and (self.key in ("alarms", "rss_sources") or self.key in self.coordinator.values)
 

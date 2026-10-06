@@ -1,0 +1,174 @@
+get_alarms:
+  name: 读取闹钟
+  description: 请求 app 上报完整闹钟列表。
+  fields:
+    device_id:
+      name: 设备配对 ID
+      required: true
+      selector:
+        text:
+    
+add_alarm:
+  name: 新增闹钟
+  description: 在 app 中创建闹钟。repeat_mask 的 bit 0–6 分别表示周一至周日，0 表示一次性。
+  fields:
+    device_id:
+      name: 设备配对 ID
+      required: true
+      selector:
+        text:
+    hour:
+      name: 小时
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 23
+          mode: box
+    minute:
+      name: 分钟
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 59
+          mode: box
+    label:
+      name: 名称
+      selector:
+        text:
+    repeat_mask:
+      name: 重复日掩码
+      description: 周一到周日对应 1、2、4、8、16、32、64；工作日模式下设 schedule_mode 为 1。
+      selector:
+        number:
+          min: 0
+          max: 127
+          mode: box
+    schedule_mode:
+      name: 日程模式
+      description: 0 为每周，1 为工作日（读取 app 的节假日配置）。
+      selector:
+        number:
+          min: 0
+          max: 1
+          mode: box
+    enabled:
+      name: 启用
+      selector:
+        boolean:
+    ring_on_makeup_workdays:
+      name: 补班日响铃
+      selector:
+        boolean:
+
+update_alarm:
+  name: 修改闹钟
+  description: 按闹钟 ID 修改提供的字段；未提供的字段保持不变。
+  fields:
+    device_id:
+      name: 设备配对 ID
+      required: true
+      selector:
+        text:
+    id:
+      name: 闹钟 ID
+      required: true
+      selector:
+        number:
+          min: 1
+          mode: box
+    hour:
+      name: 小时
+      selector:
+        number:
+          min: 0
+          max: 23
+          mode: box
+    minute:
+      name: 分钟
+      selector:
+        number:
+          min: 0
+          max: 59
+          mode: box
+    label:
+      name: 名称
+      selector:
+        text:
+    repeat_mask:
+      name: 重复日掩码
+      selector:
+        number:
+          min: 0
+          max: 127
+          mode: box
+    schedule_mode:
+      name: 日程模式
+      selector:
+        number:
+          min: 0
+          max: 1
+          mode: box
+    enabled:
+      name: 启用
+      selector:
+        boolean:
+    ring_on_makeup_workdays:
+      name: 补班日响铃
+      selector:
+        boolean:
+
+delete_alarm:
+  name: 删除闹钟
+  description: 按闹钟 ID 删除 app 中的闹钟。
+  fields:
+    device_id:
+      name: 设备配对 ID
+      required: true
+      selector:
+        text:
+    id:
+      name: 闹钟 ID
+      required: true
+      selector:
+        number:
+          min: 1
+          mode: box
+
+get_rss_config:
+  name: 读取 RSS 配置
+  description: 请求 app 上报现有 RSS 来源 URL。
+  fields:
+    device_id:
+      name: 设备配对 ID
+      required: true
+      selector:
+        text:
+
+set_rss_config:
+  name: 设置 RSS 来源
+  description: 用 URL 列表替换 app 中的 RSS 来源，并立即请求刷新。
+  fields:
+    device_id:
+      name: 设备配对 ID
+      required: true
+      selector:
+        text:
+    sources:
+      name: RSS 地址
+      required: true
+      description: 每行一个 HTTP 或 HTTPS feed URL。
+      selector:
+        text:
+          multiline: true
+
+refresh_rss:
+  name: 刷新 RSS
+  description: 让 app 立即获取已配置的 RSS 来源。
+  fields:
+    device_id:
+      name: 设备配对 ID
+      required: true
+      selector:
+        text:
