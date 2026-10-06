@@ -4,16 +4,16 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import DeviceData
-from .const import EVENT_COMMAND
-from .entity import XperiaTouchEntity
+from .const import DOMAIN, EVENT_COMMAND
+from .entity import MorningPanelEntity
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
-    data: DeviceData = hass.data["xperia_touch"][entry.entry_id]
-    async_add_entities([XperiaTouchScreenSwitch(hass, data)])
+    data: DeviceData = hass.data[DOMAIN][entry.entry_id]
+    async_add_entities([MorningPanelScreenSwitch(hass, data)])
 
 
-class XperiaTouchScreenSwitch(XperiaTouchEntity, SwitchEntity):
+class MorningPanelScreenSwitch(MorningPanelEntity, SwitchEntity):
     def __init__(self, hass, coordinator) -> None:
         super().__init__(coordinator, "screen_awake", "屏幕唤醒", "mdi:monitor")
         self.hass = hass

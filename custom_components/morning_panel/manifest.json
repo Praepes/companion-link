@@ -1,5 +1,5 @@
 {
-  "domain": "xperia_touch",
+  "domain": "morning_panel",
   "name": "Morning Panel",
   "codeowners": ["@Praepes"],
   "config_flow": true,
@@ -7,5 +7,5 @@
   "iot_class": "local_push",
   "issue_tracker": "https://github.com/Praepes/ha-morning-panel/issues",
   "single_config_entry": true,
-  "version": "1.1.0"
+  "version": "2.0.0"
 }

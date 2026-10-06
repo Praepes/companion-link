@@ -1,4 +1,4 @@
-"""Home Assistant bridge for the Xperia Touch home display."""
+"""Home Assistant integration for Morning Panel."""
 
 import logging
 from datetime import timedelta
@@ -8,7 +8,7 @@ from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.util import dt as dt_util
 
-from .const import DOMAIN, EVENT_UPDATE, PLATFORMS
+from .const import DOMAIN, EVENT_COMMAND_RESULT, EVENT_UPDATE, PLATFORMS
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ class DeviceData:
     def async_update(self, event: Event) -> None:
         self.values = dict(event.data)
         self.last_update = event.time_fired
-        _LOGGER.debug("Received Xperia Touch status update")
+        _LOGGER.debug("Received Morning Panel status update")
         for listener in tuple(self.listeners):
             listener()
 
@@ -34,7 +34,7 @@ class DeviceData:
     def async_command_result(self, event: Event) -> None:
         self.command_result = dict(event.data)
         self.command_result_at = event.time_fired
-        _LOGGER.info("Xperia Touch command %s: %s", self.command_result.get("command"),
+        _LOGGER.info("Morning Panel command %s: %s", self.command_result.get("command"),
                      "success" if self.command_result.get("success") else "failed")
         for listener in tuple(self.listeners):
             listener()
@@ -61,7 +61,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = device
     unsubscribe = hass.bus.async_listen(EVENT_UPDATE, device.async_update)
     hass.data[DOMAIN][f"unsubscribe_{entry.entry_id}"] = unsubscribe
-    result_unsubscribe = hass.bus.async_listen("xperia_touch_command_result", device.async_command_result)
+    result_unsubscribe = hass.bus.async_listen(EVENT_COMMAND_RESULT, device.async_command_result)
     hass.data[DOMAIN][f"result_unsubscribe_{entry.entry_id}"] = result_unsubscribe
     hass.data[DOMAIN][f"tick_{entry.entry_id}"] = async_track_time_interval(
         hass, device.async_tick, timedelta(seconds=30)

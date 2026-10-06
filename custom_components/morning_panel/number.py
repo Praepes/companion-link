@@ -5,16 +5,16 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import DeviceData
-from .const import EVENT_COMMAND
-from .entity import XperiaTouchEntity
+from .const import DOMAIN, EVENT_COMMAND
+from .entity import MorningPanelEntity
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
-    data: DeviceData = hass.data["xperia_touch"][entry.entry_id]
-    async_add_entities([XperiaTouchBrightness(hass, data)])
+    data: DeviceData = hass.data[DOMAIN][entry.entry_id]
+    async_add_entities([MorningPanelBrightness(hass, data)])
 
 
-class XperiaTouchBrightness(XperiaTouchEntity, NumberEntity):
+class MorningPanelBrightness(MorningPanelEntity, NumberEntity):
     _attr_native_min_value = 1
     _attr_native_max_value = 100
     _attr_native_step = 1
