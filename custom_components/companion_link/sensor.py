@@ -61,7 +61,12 @@ class CompanionLinkSensor(CompanionLinkEntity, SensorEntity):
         if self.key == "alarms":
             return {"alarms": self.coordinator.alarms}
         if self.key == "rss_sources":
-            return {"sources": self.coordinator.rss_sources}
+            return {
+                "sources": self.coordinator.rss_sources,
+                "articles": self.coordinator.rss_articles,
+                "refreshed_at": self.coordinator.rss_refreshed_at,
+                "refresh_error": self.coordinator.rss_refresh_error,
+            }
         return None
 
     @property

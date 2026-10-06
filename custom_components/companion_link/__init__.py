@@ -26,6 +26,9 @@ class DeviceData:
         self.command_result_at = None
         self.alarms = []
         self.rss_sources = []
+        self.rss_articles = []
+        self.rss_refreshed_at = None
+        self.rss_refresh_error = ""
 
     @callback
     def async_update(self, event: Event) -> None:
@@ -36,6 +39,9 @@ class DeviceData:
             self.alarms = event.data["alarms"]
         if isinstance(event.data.get("rss_sources"), list):
             self.rss_sources = event.data["rss_sources"]
+        self.rss_articles = event.data.get("rss_articles", self.rss_articles)
+        self.rss_refreshed_at = event.data.get("rss_refreshed_at", self.rss_refreshed_at)
+        self.rss_refresh_error = event.data.get("rss_refresh_error", self.rss_refresh_error)
         self.last_update = event.time_fired
         _LOGGER.debug("Received Companion Link status update")
         for listener in tuple(self.listeners):
@@ -52,6 +58,12 @@ class DeviceData:
                 self.alarms = payload["alarms"]
             if isinstance(payload.get("rss_sources"), list):
                 self.rss_sources = payload["rss_sources"]
+            if isinstance(payload.get("rss_articles"), list):
+                self.rss_articles = payload["rss_articles"]
+            if "rss_refreshed_at" in payload:
+                self.rss_refreshed_at = payload["rss_refreshed_at"]
+            if "rss_refresh_error" in payload:
+                self.rss_refresh_error = payload["rss_refresh_error"]
         self.command_result_at = event.time_fired
         _LOGGER.info("Companion Link command %s: %s", self.command_result.get("command"),
                      "success" if self.command_result.get("success") else "failed")
