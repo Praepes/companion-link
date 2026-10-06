@@ -1,0 +1,13 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Morning Panel",
+        "description": "添加后，本机状态与屏幕控制实体会自动出现。请先在晨间面板 app 中配置 Home Assistant 地址和令牌。"
+      }
+    },
+    "abort": {
+      "already_configured": "Morning Panel 已添加。"
+    }
+  }
+}

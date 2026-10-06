@@ -1,0 +1,36 @@
+from homeassistant.components.switch import SwitchEntity
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+
+from . import DeviceData
+from .const import EVENT_COMMAND
+from .entity import XperiaTouchEntity
+
+
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
+    data: DeviceData = hass.data["xperia_touch"][entry.entry_id]
+    async_add_entities([XperiaTouchScreenSwitch(hass, data)])
+
+
+class XperiaTouchScreenSwitch(XperiaTouchEntity, SwitchEntity):
+    def __init__(self, hass, coordinator) -> None:
+        super().__init__(coordinator, "screen_awake", "屏幕唤醒", "mdi:monitor")
+        self.hass = hass
+
+    @property
+    def is_on(self):
+        return bool(self.coordinator.values.get("screen_awake", False))
+
+    @property
+    def available(self):
+        return self.coordinator.available and bool(
+            self.coordinator.values.get("screen_wake_available", False)
+            or self.coordinator.values.get("screen_sleep_available", False)
+        )
+
+    async def async_turn_on(self, **kwargs) -> None:
+        self.hass.bus.async_fire(EVENT_COMMAND, {"command": "wake"})
+
+    async def async_turn_off(self, **kwargs) -> None:
+        self.hass.bus.async_fire(EVENT_COMMAND, {"command": "sleep"})

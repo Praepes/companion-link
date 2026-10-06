@@ -1,0 +1,11 @@
+{
+  "domain": "xperia_touch",
+  "name": "Morning Panel",
+  "codeowners": ["@Praepes"],
+  "config_flow": true,
+  "single_config_entry": true,
+  "documentation": "https://github.com/Praepes/ha-morning-panel",
+  "issue_tracker": "https://github.com/Praepes/ha-morning-panel/issues",
+  "iot_class": "local_push",
+  "version": "1.1.0"
+}
