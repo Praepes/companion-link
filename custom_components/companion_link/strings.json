@@ -15,5 +15,104 @@
     "error": {
       "invalid_device_id": "请输入 app 设置中显示的设备配对 ID。"
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "设备管理",
+        "description": "管理 {device_name} 的闹钟和 RSS。",
+        "menu_options": {
+          "view_alarms": "查看闹钟",
+          "add_alarm": "新增闹钟",
+          "edit_alarm": "修改闹钟",
+          "delete_alarm": "删除闹钟",
+          "view_rss": "查看 RSS 状态",
+          "configure_rss": "配置 RSS 来源",
+          "refresh_rss": "立即刷新 RSS"
+        }
+      },
+      "view_alarms": {
+        "title": "当前闹钟",
+        "description": "{alarms}"
+      },
+      "add_alarm": {
+        "title": "新增闹钟",
+        "description": "保存后会发送到 app。星期重复请选“每周”并勾选日期。",
+        "data": {
+          "hour": "小时",
+          "minute": "分钟",
+          "label": "名称",
+          "repeat_type": "重复方式",
+          "days": "每周重复日期",
+          "enabled": "启用",
+          "ring_on_makeup_workdays": "补班日响铃"
+        },
+        "data_description": {
+          "days": "“单次”和“工作日”模式会忽略此项。"
+        }
+      },
+      "edit_alarm": {
+        "title": "选择要修改的闹钟",
+        "data": {
+          "id": "闹钟"
+        }
+      },
+      "edit_alarm_values": {
+        "title": "修改闹钟",
+        "description": "正在修改：{alarm}",
+        "data": {
+          "hour": "小时",
+          "minute": "分钟",
+          "label": "名称",
+          "repeat_type": "重复方式",
+          "days": "每周重复日期",
+          "enabled": "启用",
+          "ring_on_makeup_workdays": "补班日响铃"
+        },
+        "data_description": {
+          "days": "“单次”和“工作日”模式会忽略此项。"
+        }
+      },
+      "delete_alarm": {
+        "title": "选择要删除的闹钟",
+        "data": {
+          "id": "闹钟"
+        }
+      },
+      "confirm_delete": {
+        "title": "确认删除闹钟",
+        "description": "确定删除 {alarm}？此操作会从 app 的闹钟列表移除它。",
+        "data": {
+          "confirm": "确认删除"
+        }
+      },
+      "view_rss": {
+        "title": "RSS 状态",
+        "description": "来源：\n{sources}\n\n已缓存文章：{article_count}\n最近刷新：{refreshed_at}\n刷新错误：{refresh_error}"
+      },
+      "configure_rss": {
+        "title": "配置 RSS 来源",
+        "description": "每行填写一个 HTTP 或 HTTPS feed 地址。保存后 app 会立即刷新。",
+        "data": {
+          "sources": "RSS 来源"
+        }
+      },
+      "command_sent": {
+        "title": "请求已发送",
+        "description": "{message}\n\n请在设备的“最近控制结果”实体查看 app 是否已执行。",
+        "data": {
+          "done": "完成"
+        }
+      }
+    },
+    "abort": {
+      "finished": "管理操作完成。",
+      "device_unavailable": "设备尚未连接到 Home Assistant。请确认 app 正在运行并重试。",
+      "no_alarms": "设备当前没有可管理的闹钟。",
+      "alarm_not_found": "找不到所选闹钟。请重新打开管理菜单后再试。"
+    },
+    "error": {
+      "select_weekdays": "选择“每周”时至少勾选一天。"
+    }
   }
 }

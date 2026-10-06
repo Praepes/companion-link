@@ -1,7 +1,9 @@
 from homeassistant import config_entries
+from homeassistant.core import callback
 import voluptuous as vol
 
 from .const import CONF_DEVICE_ID, DOMAIN
+from .options_flow import CompanionLinkOptionsFlow
 
 
 class CompanionLinkConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -27,3 +29,9 @@ class CompanionLinkConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=self.STEP_USER_DATA_SCHEMA,
             errors=errors,
         )
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry):
+        """Open the device management menu."""
+        return CompanionLinkOptionsFlow()
