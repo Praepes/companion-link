@@ -4,19 +4,19 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import DeviceData
-from .const import DOMAIN, EVENT_COMMAND
-from .entity import MorningPanelEntity
+from .const import DOMAIN
+from .entity import CompanionLinkEntity
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     data: DeviceData = hass.data[DOMAIN][entry.entry_id]
     async_add_entities([
-        MorningPanelAlarmButton(hass, data, "snooze_alarm", "贪睡闹钟 10 分钟", "mdi:alarm-snooze"),
-        MorningPanelAlarmButton(hass, data, "stop_alarm", "停止闹钟", "mdi:alarm-off"),
+        CompanionLinkAlarmButton(hass, data, "snooze_alarm", "贪睡闹钟 10 分钟", "mdi:alarm-snooze"),
+        CompanionLinkAlarmButton(hass, data, "stop_alarm", "停止闹钟", "mdi:alarm-off"),
     ])
 
 
-class MorningPanelAlarmButton(MorningPanelEntity, ButtonEntity):
+class CompanionLinkAlarmButton(CompanionLinkEntity, ButtonEntity):
     def __init__(self, hass, coordinator, command: str, name: str, icon: str) -> None:
         super().__init__(coordinator, command, name, icon)
         self.hass = hass
@@ -27,4 +27,4 @@ class MorningPanelAlarmButton(MorningPanelEntity, ButtonEntity):
         return self.coordinator.available and bool(self.coordinator.values.get("alarm_ringing", False))
 
     async def async_press(self) -> None:
-        self.hass.bus.async_fire(EVENT_COMMAND, {"command": self.command})
+        self.coordinator.send_command(self.command)

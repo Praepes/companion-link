@@ -4,16 +4,16 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import DeviceData
-from .const import DOMAIN, EVENT_COMMAND
-from .entity import MorningPanelEntity
+from .const import DOMAIN
+from .entity import CompanionLinkEntity
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     data: DeviceData = hass.data[DOMAIN][entry.entry_id]
-    async_add_entities([MorningPanelScreenSwitch(hass, data)])
+    async_add_entities([CompanionLinkScreenSwitch(hass, data)])
 
 
-class MorningPanelScreenSwitch(MorningPanelEntity, SwitchEntity):
+class CompanionLinkScreenSwitch(CompanionLinkEntity, SwitchEntity):
     def __init__(self, hass, coordinator) -> None:
         super().__init__(coordinator, "screen_awake", "屏幕唤醒", "mdi:monitor")
         self.hass = hass
@@ -30,7 +30,7 @@ class MorningPanelScreenSwitch(MorningPanelEntity, SwitchEntity):
         )
 
     async def async_turn_on(self, **kwargs) -> None:
-        self.hass.bus.async_fire(EVENT_COMMAND, {"command": "wake"})
+        self.coordinator.send_command("wake")
 
     async def async_turn_off(self, **kwargs) -> None:
-        self.hass.bus.async_fire(EVENT_COMMAND, {"command": "sleep"})
+        self.coordinator.send_command("sleep")

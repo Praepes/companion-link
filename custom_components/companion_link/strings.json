@@ -1,0 +1,19 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Companion Link",
+        "description": "在配套 app 的 Home Assistant 设置中复制设备配对 ID 并填入。每个客户端设备分别添加一次。",
+        "data": {
+          "device_id": "设备配对 ID"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "这个客户端设备已添加。"
+    },
+    "error": {
+      "invalid_device_id": "请输入 app 设置中显示的设备配对 ID。"
+    }
+  }
+}

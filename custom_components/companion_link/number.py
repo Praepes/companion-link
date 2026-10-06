@@ -5,16 +5,16 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import DeviceData
-from .const import DOMAIN, EVENT_COMMAND
-from .entity import MorningPanelEntity
+from .const import DOMAIN
+from .entity import CompanionLinkEntity
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     data: DeviceData = hass.data[DOMAIN][entry.entry_id]
-    async_add_entities([MorningPanelBrightness(hass, data)])
+    async_add_entities([CompanionLinkBrightness(hass, data)])
 
 
-class MorningPanelBrightness(MorningPanelEntity, NumberEntity):
+class CompanionLinkBrightness(CompanionLinkEntity, NumberEntity):
     _attr_native_min_value = 1
     _attr_native_max_value = 100
     _attr_native_step = 1
@@ -37,4 +37,4 @@ class MorningPanelBrightness(MorningPanelEntity, NumberEntity):
         return self.coordinator.available and bool(self.coordinator.values.get("brightness_control_available", False))
 
     async def async_set_native_value(self, value: float) -> None:
-        self.hass.bus.async_fire(EVENT_COMMAND, {"command": "brightness", "value": int(value)})
+        self.coordinator.send_command("brightness", value=int(value))
