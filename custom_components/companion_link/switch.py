@@ -24,9 +24,11 @@ class CompanionLinkScreenSwitch(CompanionLinkEntity, SwitchEntity):
 
     @property
     def available(self):
+        # A switch exposes both directions. Hide it unless both actions are
+        # supported so HA cannot request a screen sleep the device cannot do.
         return self.coordinator.available and bool(
             self.coordinator.values.get("screen_wake_available", False)
-            or self.coordinator.values.get("screen_sleep_available", False)
+            and self.coordinator.values.get("screen_sleep_available", False)
         )
 
     async def async_turn_on(self, **kwargs) -> None:
