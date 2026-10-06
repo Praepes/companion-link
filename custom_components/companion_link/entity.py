@@ -60,6 +60,26 @@ def add_alarm_entities(hass, entry, coordinator, async_add_entities, factory) ->
                 else:
                     hass.async_create_task(entity.async_remove(force_remove=True))
 
+        # Also clean up alarm entities left in the registry by an older version
+        # that kept deleted alarms as unavailable entities.
+        if coordinator.last_update is not None:
+            unique_prefix = f"{DOMAIN}_{coordinator.device_id}_"
+            for registry_entry in tuple(registry.entities.values()):
+                if registry_entry.config_entry_id != entry.entry_id:
+                    continue
+                unique_id = registry_entry.unique_id
+                if not unique_id.startswith(unique_prefix):
+                    continue
+                key = unique_id[len(unique_prefix):]
+                if key.startswith("alarm_"):
+                    alarm_id = key[len("alarm_"):].split("_", 1)[0]
+                elif key.startswith("delete_alarm_"):
+                    alarm_id = key[len("delete_alarm_"):]
+                else:
+                    continue
+                if alarm_id not in current_ids:
+                    registry.async_remove(registry_entry.entity_id)
+
     unsubscribe = coordinator.add_listener(sync_alarms)
     hass.data[DOMAIN].setdefault(f"_platform_unsubs_{entry.entry_id}", []).append(unsubscribe)
     sync_alarms()
