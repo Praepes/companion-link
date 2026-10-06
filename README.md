@@ -13,6 +13,16 @@
 
 也可以手动安装：将 `custom_components/companion_link` 复制到 HA 的 `config/custom_components/companion_link`，重启 HA 后添加集成。
 
+## 客户端协议
+
+配套 app 共用以下本地事件协议。每个客户端在状态与命令事件中都必须带相同的 `device_id`；命令接收方只执行发给自身 ID 的命令。
+
+- `companion_link_update`：状态上报，至少包含 `device_id`、`device_name`、`client_name`、`manufacturer`、`device_model` 和 `app_version`。各 app 可继续上报自己的状态字段。
+- `companion_link_command`：HA 下发命令，包含目标 `device_id`、`command` 和可选参数。
+- `companion_link_command_result`：命令执行结果，包含 `device_id`、`command`、`success` 和 `message`。
+
+HA 配置流程按 `device_id` 创建独立配置项，状态、实体和命令都会按 ID 隔离。新增 app 时，先选用现有字段和命令；确需增加能力时再扩展协议。
+
 ## 控制能力
 
 - 唤醒屏幕：Android 电源唤醒锁，无需 Root。
