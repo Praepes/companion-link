@@ -45,7 +45,7 @@ App 和集成的本地 API 已验证；真实 HA 新实体联测需完成集成�
 
 手动升级：把 ZIP 中的 `custom_components/companion_link` 完整覆盖到 HA 的
 `config/custom_components/companion_link`，然后重启 Home Assistant；仅重新配对不会载入新增平台。
-原有配对可以保留，升级后集成详情应显示版本 **3.1.1**。
+原有配对可以保留，升级后集成详情应显示版本 **3.1.2**。
 
 ## 设备没有出现时
 
@@ -55,3 +55,23 @@ App 和集成的本地 API 已验证；真实 HA 新实体联测需完成集成�
 - 设备实体建立后，即使 app 尚未上报，也应能在集成设备页看到实体；收到状态事件后实体从不可用转为在线。
 
 HA 令牌只保存在 app 端，不随本机闹钟备份导出。集成使用 `companion_link` 域名和 `companion_link_*` 事件协议，并按配对 ID 区分设备。由 Morning Panel 2.x 升级时，请删除旧集成并重新添加客户端；实体历史和旧实体 ID 不会迁移。
+
+## 投影留言（集成 3.1.2 / Morning Panel 0.3.3）
+
+设备页面新增 **留言内容**、**留言铃声**、**发送留言**：先填写内容（最多 255 字），再选择是否播放提示音，最后点击发送。
+编辑内容和切换铃声只保存草稿，不会立即投影。也可以在自动化中调用：
+
+```yaml
+action: companion_link.send_message
+data:
+  device_id: "填写 App 的 Companion Link 配对 ID"
+  text: "晚饭做好了，请来吃饭。"
+  play_sound: true
+```
+
+- 休眠时自动恢复风扇、光机和 Android，显示三分钟后恢复休眠；原本唤醒则返回首页。
+- 新留言覆盖上一条并重新计时三分钟，点击画面或返回键可提前结束。
+- 铃声使用系统通知提示音，播放一次且最多十秒；静音留言不播放声音。
+- 闹钟优先，留言等待闹钟结束后再显示三分钟。HA 主动休眠、唤醒或切换输入会结束当前留言。
+- 只有上报 `message_supported: true` 的客户端会建立这三个实体，保留旧版本设备兼容性。
+- 本机 API 命令：`set_message_config` 保存 `text` / `play_sound`；`send_message` 省略参数时使用已保存草稿。

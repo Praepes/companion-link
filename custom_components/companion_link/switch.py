@@ -1,16 +1,18 @@
 from homeassistant.components.switch import SwitchEntity
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import DeviceData
 from .const import DOMAIN
-from .entity import CompanionLinkEntity, add_alarm_entities, get_alarm
+from .entity import CompanionLinkEntity, add_alarm_entities, add_message_entities, get_alarm
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     data: DeviceData = hass.data[DOMAIN][entry.entry_id]
     async_add_entities([CompanionLinkScreenSwitch(hass, data)])
+    add_message_entities(entry, data, async_add_entities, lambda d: [CompanionLinkMessageSound(d)])
     add_alarm_entities(
         hass,
         entry,
@@ -70,3 +72,23 @@ class CompanionLinkAlarmSwitch(CompanionLinkEntity, SwitchEntity):
 
     async def async_turn_off(self, **kwargs) -> None:
         self.coordinator.send_command("update_alarm", id=self.alarm_id, **{self.field: False})
+
+
+class CompanionLinkMessageSound(CompanionLinkEntity, SwitchEntity):
+    def __init__(self, coordinator):
+        super().__init__(coordinator, "message_sound", "留言铃声", "mdi:bell-ring-outline")
+
+    @property
+    def is_on(self):
+        return bool(self.coordinator.values.get("message_sound", False))
+
+    async def _set_sound(self, enabled):
+        result = await self.coordinator._async_send_command("set_message_config", {"play_sound": enabled})
+        if not result.get("success", False):
+            raise HomeAssistantError(result.get("message", "铃声设置失败"))
+
+    async def async_turn_on(self, **kwargs):
+        await self._set_sound(True)
+
+    async def async_turn_off(self, **kwargs):
+        await self._set_sound(False)

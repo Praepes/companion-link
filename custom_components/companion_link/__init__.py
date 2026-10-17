@@ -156,7 +156,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     data.pop(entry.entry_id)
     if not any(isinstance(item, DeviceData) for item in data.values()):
         for service in ("get_alarms", "add_alarm", "update_alarm", "delete_alarm",
-                        "get_rss_config", "set_rss_config", "refresh_rss"):
+                        "get_rss_config", "set_rss_config", "refresh_rss", "send_message"):
             hass.services.async_remove(DOMAIN, service)
         data.pop("services_registered", None)
     return True
@@ -164,6 +164,11 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 def _register_services(hass: HomeAssistant) -> None:
     schemas = {
+        "send_message": vol.Schema({
+            vol.Required("device_id"): str,
+            vol.Required("text"): vol.All(str, vol.Length(min=1, max=255)),
+            vol.Optional("play_sound", default=False): bool,
+        }),
         "get_alarms": vol.Schema({vol.Required("device_id"): str}),
         "add_alarm": vol.Schema({
             vol.Required("device_id"): str,

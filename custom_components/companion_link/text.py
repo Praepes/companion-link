@@ -10,7 +10,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import DeviceData
 from .const import DOMAIN
-from .entity import CompanionLinkEntity, add_alarm_entities, get_alarm
+from .entity import CompanionLinkEntity, add_alarm_entities, add_message_entities, get_alarm
 
 WEEKDAYS = ("周一", "周二", "周三", "周四", "周五", "周六", "周日")
 WEEKDAY_ALIASES = {
@@ -33,6 +33,7 @@ async def async_setup_entry(
     """Set up editable alarm and RSS text entities."""
     data: DeviceData = hass.data[DOMAIN][entry.entry_id]
     async_add_entities([CompanionLinkRssSources(data)])
+    add_message_entities(entry, data, async_add_entities, lambda d: [CompanionLinkMessageText(d)])
     add_alarm_entities(
         hass,
         entry,
@@ -159,3 +160,21 @@ class CompanionLinkAlarmRepeat(CompanionLinkEntity, TextEntity):
             repeat_mask=repeat_mask,
             schedule_mode=schedule_mode,
         )
+
+
+class CompanionLinkMessageText(CompanionLinkEntity, TextEntity):
+    _attr_mode = TextMode.TEXT
+    _attr_native_min = 0
+    _attr_native_max = 255
+
+    def __init__(self, coordinator):
+        super().__init__(coordinator, "message_text", "留言内容", "mdi:message-text-outline")
+
+    @property
+    def native_value(self):
+        return self.coordinator.values.get("message_text", "")
+
+    async def async_set_value(self, value):
+        result = await self.coordinator._async_send_command("set_message_config", {"text": value})
+        if not result.get("success", False):
+            raise HomeAssistantError(result.get("message", "留言保存失败"))

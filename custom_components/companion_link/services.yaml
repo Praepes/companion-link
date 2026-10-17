@@ -172,3 +172,25 @@ refresh_rss:
       required: true
       selector:
         text:
+
+send_message:
+  name: 发送投影留言
+  description: 唤醒设备并显示留言三分钟；结束后恢复原先休眠状态。闹钟响铃时排队，可选播放一次提示音。
+  fields:
+    device_id:
+      name: Companion Link 设备 ID
+      required: true
+      selector:
+        text:
+    text:
+      name: 留言内容
+      description: 最多 255 字。
+      required: true
+      selector:
+        text:
+          multiline: true
+    play_sound:
+      name: 播放提示铃声
+      default: false
+      selector:
+        boolean:

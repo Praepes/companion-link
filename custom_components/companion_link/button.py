@@ -6,7 +6,7 @@ from homeassistant.exceptions import HomeAssistantError
 
 from . import DeviceData
 from .const import DOMAIN
-from .entity import CompanionLinkEntity, add_alarm_entities
+from .entity import CompanionLinkEntity, add_alarm_entities, add_message_entities
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
@@ -18,6 +18,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         CompanionLinkAlarmButton(hass, data, "snooze_alarm", "贪睡闹钟 10 分钟", "mdi:alarm-snooze"),
         CompanionLinkAlarmButton(hass, data, "stop_alarm", "停止闹钟", "mdi:alarm-off"),
     ])
+    add_message_entities(entry, data, async_add_entities, lambda d: [CompanionLinkSendMessageButton(d)])
     projector_added = False
 
     def add_projector_buttons():
@@ -126,3 +127,17 @@ class CompanionLinkDeleteAlarmButton(CompanionLinkEntity, ButtonEntity):
 
     async def async_press(self) -> None:
         self.coordinator.send_command("delete_alarm", id=self.alarm_id)
+
+
+class CompanionLinkSendMessageButton(CompanionLinkEntity, ButtonEntity):
+    def __init__(self, coordinator):
+        super().__init__(coordinator, "send_message", "发送留言", "mdi:message-arrow-right-outline")
+
+    @property
+    def available(self):
+        return super().available and bool(self.coordinator.values.get("message_supported", False))
+
+    async def async_press(self):
+        result = await self.coordinator._async_send_command("send_message", {})
+        if not result.get("success", False):
+            raise HomeAssistantError(result.get("message", "留言发送失败"))

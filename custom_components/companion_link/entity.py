@@ -88,3 +88,17 @@ def add_alarm_entities(hass, entry, coordinator, async_add_entities, factory) ->
 def get_alarm(coordinator, alarm_id):
     """Find an alarm in the latest device state."""
     return next((alarm for alarm in coordinator.alarms if str(alarm.get("id")) == str(alarm_id)), None)
+
+
+def add_message_entities(entry, coordinator, async_add_entities, factory) -> None:
+    """Discover message controls only after the app advertises support."""
+    added = False
+
+    def discover():
+        nonlocal added
+        if not added and coordinator.values.get("message_supported", False):
+            added = True
+            async_add_entities(factory(coordinator))
+
+    entry.async_on_unload(coordinator.add_listener(discover))
+    discover()
