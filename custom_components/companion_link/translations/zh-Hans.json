@@ -3,17 +3,20 @@
     "step": {
       "user": {
         "title": "Companion Link",
-        "description": "在配套 app 的 Home Assistant 设置中复制设备配对 ID 并填入。每个客户端设备分别添加一次。",
+        "description": "输入 app 设置中显示的设备局域网 IP 地址和 8 位配对码。HA 会与设备建立专用连接，不需要 Home Assistant 长期访问令牌。",
         "data": {
-          "device_id": "设备配对 ID"
+          "host": "设备 IP 地址",
+          "pairing_code": "8 位配对码"
         }
       }
     },
     "abort": {
-      "already_configured": "这个客户端设备已添加。"
+      "reconfigure_successful": "设备连接信息已更新。"
     },
     "error": {
-      "invalid_device_id": "请输入 app 设置中显示的设备配对 ID。"
+      "invalid_host": "请输入有效的设备 IP 地址。",
+      "invalid_pairing_code": "配对码无效，请检查 app 中显示的配对码。",
+      "cannot_connect": "无法连接设备。请确认设备和 Home Assistant 在可互通的网络中，且 app 正在运行。"
     }
   },
   "options": {

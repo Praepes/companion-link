@@ -24,7 +24,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         CompanionLinkSensor(data, "uptime_seconds", "运行时间", "mdi:timer-outline", None, UnitOfTime.SECONDS),
         CompanionLinkSensor(data, "next_alarm", "下次闹钟", "mdi:alarm", SensorDeviceClass.TIMESTAMP, None),
         CompanionLinkSensor(data, "next_alarm_label", "下次闹钟名称", "mdi:label-outline", None, None),
-        CompanionLinkSensor(data, "alarms", "闹钟列表", "mdi:alarm-multiple", None, None),
+        CompanionLinkSensor(data, "alarms", "闹钟列表", "mdi:format-list-bulleted", None, None),
         CompanionLinkSensor(data, "rss_sources", "RSS 来源", "mdi:rss", None, None),
         CompanionLinkSensor(data, "capabilities", "可用控制能力", "mdi:check-decagram", None, None),
         CompanionLinkSensor(data, "command_result", "最近控制结果", "mdi:check-circle-outline", None, None),

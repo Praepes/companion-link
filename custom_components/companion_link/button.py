@@ -2,6 +2,7 @@ from homeassistant.components.button import ButtonEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.exceptions import HomeAssistantError
 
 from . import DeviceData
 from .const import DOMAIN
@@ -17,6 +18,20 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         CompanionLinkAlarmButton(hass, data, "snooze_alarm", "贪睡闹钟 10 分钟", "mdi:alarm-snooze"),
         CompanionLinkAlarmButton(hass, data, "stop_alarm", "停止闹钟", "mdi:alarm-off"),
     ])
+    projector_added = False
+
+    def add_projector_buttons():
+        nonlocal projector_added
+        if not projector_added and (data.values.get("input_source_supported", False)
+                                    or "G1109" in str(data.values.get("device_model", ""))):
+            projector_added = True
+            async_add_entities([
+                CompanionLinkProjectorButton(data, "sleep", "休眠并关闭投影", "mdi:projector-off"),
+                CompanionLinkProjectorButton(data, "wake", "唤醒并恢复投影", "mdi:projector"),
+            ])
+
+    entry.async_on_unload(data.add_listener(add_projector_buttons))
+    add_projector_buttons()
     add_alarm_entities(
         hass,
         entry,
@@ -24,6 +39,21 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         async_add_entities,
         lambda alarm: [CompanionLinkDeleteAlarmButton(data, alarm["id"])],
     )
+
+
+class CompanionLinkProjectorButton(CompanionLinkEntity, ButtonEntity):
+    def __init__(self, coordinator, command: str, name: str, icon: str) -> None:
+        super().__init__(coordinator, f"projector_{command}", name, icon)
+        self.command = command
+
+    @property
+    def available(self) -> bool:
+        return super().available and bool(self.coordinator.values.get("projector_control_available", False))
+
+    async def async_press(self) -> None:
+        result = await self.coordinator._async_send_command(self.command, {})
+        if not result.get("success", False):
+            raise HomeAssistantError(result.get("message", "Projector power command failed"))
 
 
 class CompanionLinkWakeButton(CompanionLinkEntity, ButtonEntity):

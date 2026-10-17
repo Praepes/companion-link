@@ -27,6 +27,7 @@ class CompanionLinkOptionsFlow(config_entries.OptionsFlow):
     """Manage alarms and RSS directly from the integration config screen."""
 
     def __init__(self) -> None:
+        super().__init__()
         self._selected_alarm: dict | None = None
         self._finish_step: str | None = None
 
