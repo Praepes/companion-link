@@ -6,7 +6,7 @@ from homeassistant.exceptions import HomeAssistantError
 
 from . import DeviceData
 from .const import DOMAIN
-from .entity import CompanionLinkEntity, add_alarm_entities, add_message_entities
+from .entity import CompanionLinkEntity, add_alarm_entities, add_message_entities, add_optics_entities
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
@@ -19,6 +19,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         CompanionLinkAlarmButton(hass, data, "stop_alarm", "停止闹钟", "mdi:alarm-off"),
     ])
     add_message_entities(entry, data, async_add_entities, lambda d: [CompanionLinkSendMessageButton(d)])
+    add_optics_entities(entry, data, async_add_entities, lambda d: [CompanionLinkAutoFocusButton(d)])
     projector_added = False
 
     def add_projector_buttons():
@@ -141,3 +142,8 @@ class CompanionLinkSendMessageButton(CompanionLinkEntity, ButtonEntity):
         result = await self.coordinator._async_send_command("send_message", {})
         if not result.get("success", False):
             raise HomeAssistantError(result.get("message", "留言发送失败"))
+
+
+class CompanionLinkAutoFocusButton(CompanionLinkProjectorButton):
+    def __init__(self, coordinator) -> None:
+        super().__init__(coordinator, "auto_focus", "一键自动对焦", "mdi:focus-auto")

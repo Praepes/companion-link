@@ -102,3 +102,17 @@ def add_message_entities(entry, coordinator, async_add_entities, factory) -> Non
 
     entry.async_on_unload(coordinator.add_listener(discover))
     discover()
+
+
+def add_optics_entities(entry, coordinator, async_add_entities, factory) -> None:
+    """Discover G1109 optics controls after the app advertises the capability."""
+    added = False
+
+    def discover():
+        nonlocal added
+        if not added and coordinator.values.get("projector_optics_supported", False):
+            added = True
+            async_add_entities(factory(coordinator))
+
+    entry.async_on_unload(coordinator.add_listener(discover))
+    discover()
